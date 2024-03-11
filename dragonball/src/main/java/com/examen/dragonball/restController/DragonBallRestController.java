@@ -43,7 +43,12 @@ public class DragonBallRestController {
 
     @GetMapping(path = "/radar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Dragonball>> getBolasdeDragon() {
-        return new ResponseEntity<List<Dragonball>>(bolasdeDragon, HttpStatus.OK);
+        List<Dragonball> listaDragonballs = new ArrayList<Dragonball>();
+        for (Dragonball bola : bolasdeDragon) {
+            if (!bola.isEstado())
+            listaDragonballs.add(new Dragonball(bola.getNumEstrellas(), bola.getUbicacion(), bola.getEstado()));
+        }
+        return new ResponseEntity<List<Dragonball>>(listaDragonballs, HttpStatus.OK);
     }
 
     @GetMapping(path = "/owned", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,10 +56,11 @@ public class DragonBallRestController {
         return new ResponseEntity<List<Dragonball>>(bolasdeDragon.stream().filter(b -> b.isEstado()).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/get{ball}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Dragonball> getBolaDeDragon(@PathVariable int ball) {
+    @GetMapping(path = "/get", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Dragonball> getBolaDeDragon(@RequestParam int ball) {
         Dragonball bola = bolasdeDragon.stream().filter(b -> b.getNumEstrellas() == ball).findFirst().orElse(null);
         if (bola != null) {
+            bola.setEstado(true);
             return new ResponseEntity<Dragonball>(bola, HttpStatus.OK);
         } else {
             return new ResponseEntity<Dragonball>(HttpStatus.NOT_FOUND);

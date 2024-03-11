@@ -30,6 +30,10 @@ public class Dragonball {
         this.ubicacion = localizacion;
     }
 
+    public boolean getEstado() {
+        return estado;
+    }
+
     public boolean isEstado() {
         return estado;
     }
