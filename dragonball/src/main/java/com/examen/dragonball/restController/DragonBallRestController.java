@@ -41,9 +41,34 @@ public class DragonBallRestController {
         new Dragonball(7, localizacionesBolasdeDragon[6], false)
     ));
 
-    @GetMapping(path = "/bolasdeDragon/radar", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/radar", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Dragonball>> getBolasdeDragon() {
         return new ResponseEntity<List<Dragonball>>(bolasdeDragon, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/owned", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dragonball>> getOwnedBolasdeDragon() {
+        return new ResponseEntity<List<Dragonball>>(bolasdeDragon.stream().filter(b -> b.isEstado()).collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/get{ball}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Dragonball> getBolaDeDragon(@PathVariable int ball) {
+        Dragonball bola = bolasdeDragon.stream().filter(b -> b.getNumEstrellas() == ball).findFirst().orElse(null);
+        if (bola != null) {
+            return new ResponseEntity<Dragonball>(bola, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Dragonball>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(path = "/invokeDragon", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Dragonball> addBolaDeDragon(@RequestBody Dragonball bola) {
+        if (bolasdeDragon.stream().filter(b -> b.getNumEstrellas() == bola.getNumEstrellas()).findFirst().orElse(null) == null) {
+            bolasdeDragon.add(bola);
+            return new ResponseEntity<Dragonball>(bola, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<Dragonball>(HttpStatus.CONFLICT);
+        }
     }
 
     
