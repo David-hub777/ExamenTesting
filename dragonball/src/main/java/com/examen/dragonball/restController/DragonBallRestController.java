@@ -116,7 +116,7 @@ public class DragonBallRestController {
             //         listaDragonballs.add(bola);
             //     }
             // }
-            return new ResponseEntity<List<Dragonball>>( HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<List<Dragonball>>(bolasdeDragon, HttpStatus.I_AM_A_TEAPOT);
         } else {
             return new ResponseEntity<List<Dragonball>>(HttpStatus.CONFLICT);
         }

@@ -55,8 +55,9 @@ public class JanKenPonController {
 	}
 
     @GetMapping(path="/results/{jugador}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String results(@PathVariable String jugador) {
-        return new String();
+    public ResponseEntity<Partida> results(@PathVariable String jugador) {
+        return new ResponseEntity<Partida>(partida, HttpStatus.OK);
+
     }
     
 }
