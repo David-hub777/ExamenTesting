@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.examen.dragonball.models.Dragonball;
 
+import com.examen.dragonball.models.DragonballOwn;
+
 @RestController
 @RequestMapping(path = "/dragonball")
 public class DragonBallRestController {
@@ -53,27 +55,70 @@ public class DragonBallRestController {
 
     @GetMapping(path = "/owned", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Dragonball>> getOwnedBolasdeDragon() {
-        return new ResponseEntity<List<Dragonball>>(bolasdeDragon.stream().filter(b -> b.isEstado()).collect(Collectors.toList()), HttpStatus.OK);
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        List<Dragonball> listaDragonballs = new ArrayList<Dragonball>();
+        for(Dragonball bola : bolasdeDragon){
+            if(bola.isEstado()){
+                listaDragonballs.add(bola);
+            }
+        }
+        return new ResponseEntity<List<Dragonball>>(listaDragonballs, HttpStatus.OK);
     }
 
     @GetMapping(path = "/get", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Dragonball> getBolaDeDragon(@RequestParam int ball) {
-        Dragonball bola = bolasdeDragon.stream().filter(b -> b.getNumEstrellas() == ball).findFirst().orElse(null);
-        if (bola != null) {
+    public ResponseEntity<DragonballOwn> get(@RequestParam int ball) {
+        
+        ArrayList<Integer> listaNumEstrellas = new ArrayList<Integer>();
+        for(Dragonball bola : bolasdeDragon){
+            listaNumEstrellas.add(bola.getNumEstrellas());
             bola.setEstado(true);
-            return new ResponseEntity<Dragonball>(bola, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<Dragonball>(HttpStatus.NOT_FOUND);
         }
+        
+        for(int numeroBola : listaNumEstrellas){
+            if(numeroBola == ball){
+                Dragonball dragonball = bolasdeDragon.get(ball-1);
+                // dragonball.setEstado(true);
+                DragonballOwn Medragonball = new DragonballOwn(dragonball.getNumEstrellas(), dragonball.getEstado());
+                return new ResponseEntity<DragonballOwn>(Medragonball, HttpStatus.OK);
+            }
+        }
+        
+            // bola.setEstado(true);
+            // DragonballOwn Medragonball = new DragonballOwn(bola.getNumEstrellas(), bola.getEstado());
+            // return new ResponseEntity<DragonballOwn>(Medragonball, HttpStatus.OK);
+            // //Creo un modelo DragonballOwn para devolver stardots y found property
+        
+        return new ResponseEntity<DragonballOwn>(HttpStatus.NOT_FOUND);
+        
     }
 
-    @PostMapping(path = "/invokeDragon", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Dragonball> addBolaDeDragon(@RequestBody Dragonball bola) {
-        if (bolasdeDragon.stream().filter(b -> b.getNumEstrellas() == bola.getNumEstrellas()).findFirst().orElse(null) == null) {
-            bolasdeDragon.add(bola);
-            return new ResponseEntity<Dragonball>(bola, HttpStatus.CREATED);
+    @PostMapping(path = "/invokeDragon", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dragonball>> invokeDragon() {
+        List<Dragonball> listaDragonball = new ArrayList<Dragonball>();
+        // for (Dragonball bola : bolasdeDragon) {
+        //     if (bola.isEstado()) {
+        //         listaDragonballs.add(bola);
+        //     }
+        // }
+        // System.out.println("Se han encontrado todas las bolas de dragon.Invoca a Shenron"+listaDragonballs.size());
+        if (bolasdeDragon.size() == 7) {
+            System.out.println("Se han encontrado todas las bolas de dragon.Invoca a Shenron");
+            for(Dragonball ball : bolasdeDragon){
+                ball.setEstado(false);
+            }
+            // List<Dragonball> listaDragonballs = new ArrayList<Dragonball>();
+            // for(Dragonball bola : bolasdeDragon){
+            //     if(bola.isEstado()){
+            //         listaDragonballs.add(bola);
+            //     }
+            // }
+            return new ResponseEntity<List<Dragonball>>( HttpStatus.I_AM_A_TEAPOT);
         } else {
-            return new ResponseEntity<Dragonball>(HttpStatus.CONFLICT);
+            return new ResponseEntity<List<Dragonball>>(HttpStatus.CONFLICT);
         }
     }
 
